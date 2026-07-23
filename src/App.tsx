@@ -23,7 +23,7 @@ export default function App() {
 
   const visiblePlaces = places.filter((p) => isActive(p.category));
 
-  function handleMapClick(lat: number, lng: number) {
+  function handleLongPress(lat: number, lng: number) {
     setPanel({ kind: 'creating', location: { lat, lng } });
   }
 
@@ -61,7 +61,7 @@ export default function App() {
           initialView={view}
           onViewChange={saveView}
           draftLocation={panel.kind === 'creating' ? panel.location : null}
-          onMapClick={handleMapClick}
+          onLongPress={handleLongPress}
           onSelectPlace={handleSelectPlace}
         />
 

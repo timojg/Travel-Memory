@@ -1,10 +1,10 @@
-import { MapContainer, Marker, TileLayer } from 'react-leaflet';
+import { LayersControl, MapContainer, Marker, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { getCategory } from '../../config/categories';
 import { makeDivIcon } from '../../lib/leafletIcon';
 import type { Place } from '../../types/place';
 import type { MapView as MapViewState } from '../../hooks/useMapView';
-import { MapClickHandler } from './MapClickHandler';
+import { MapLongPressHandler } from './MapLongPressHandler';
 import { MapViewSync } from './MapViewSync';
 
 const DRAFT_ICON = makeDivIcon('#9e9e9e', '📍');
@@ -14,7 +14,7 @@ interface Props {
   initialView: MapViewState;
   onViewChange: (view: MapViewState) => void;
   draftLocation: { lat: number; lng: number } | null;
-  onMapClick: (lat: number, lng: number) => void;
+  onLongPress: (lat: number, lng: number) => void;
   onSelectPlace: (id: string) => void;
 }
 
@@ -23,7 +23,7 @@ export function MapView({
   initialView,
   onViewChange,
   draftLocation,
-  onMapClick,
+  onLongPress,
   onSelectPlace,
 }: Props) {
   return (
@@ -32,11 +32,23 @@ export function MapView({
       zoom={initialView.zoom}
       className="map-container"
     >
-      <TileLayer
-        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      />
-      <MapClickHandler onClick={onMapClick} />
+      <LayersControl position="topright">
+        <LayersControl.BaseLayer checked name="Standard">
+          <TileLayer
+            url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          />
+        </LayersControl.BaseLayer>
+        <LayersControl.BaseLayer name="Outdoor (Stellplätze, Wanderwege, Sehenswürdigkeiten)">
+          <TileLayer
+            url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+            subdomains="abc"
+            maxZoom={17}
+            attribution='Kartendaten: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende, SRTM | Kartendarstellung: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+          />
+        </LayersControl.BaseLayer>
+      </LayersControl>
+      <MapLongPressHandler onLongPress={onLongPress} />
       <MapViewSync onChange={onViewChange} />
       {places.map((place) => {
         const category = getCategory(place.category);

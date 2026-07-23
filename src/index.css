@@ -140,6 +140,10 @@ input[type='checkbox'] {
   border-left: 1px solid var(--border);
   background: var(--panel-bg);
   position: relative;
+  /* Leaflet's control panes (zoom, attribution) use z-index up to 1000 and
+     leak out of .leaflet-container, which has no stacking context of its
+     own. Without this the panel renders behind them on mobile. */
+  z-index: 1100;
 }
 
 @media (max-width: 700px) {
