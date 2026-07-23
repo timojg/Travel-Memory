@@ -1,5 +1,5 @@
-import { useRef } from 'react';
-import { useMapEvents } from 'react-leaflet';
+import { useEffect, useRef } from 'react';
+import { useMap, useMapEvents } from 'react-leaflet';
 import type { LeafletMouseEvent } from 'leaflet';
 
 // A tap alone must keep working for panning/zooming on touch devices, so
@@ -13,8 +13,19 @@ interface Props {
 }
 
 export function MapLongPressHandler({ onLongPress }: Props) {
+  const map = useMap();
   const timerRef = useRef<number | null>(null);
   const startRef = useRef<LeafletMouseEvent | null>(null);
+
+  useEffect(() => {
+    // A long press on a map tile (an <img>) can trigger the browser's
+    // native "save/open image" context menu, which fights with our
+    // long-press-to-create gesture just like text selection does.
+    const container = map.getContainer();
+    const preventContextMenu = (e: Event) => e.preventDefault();
+    container.addEventListener('contextmenu', preventContextMenu);
+    return () => container.removeEventListener('contextmenu', preventContextMenu);
+  }, [map]);
 
   function cancelPress() {
     if (timerRef.current !== null) {

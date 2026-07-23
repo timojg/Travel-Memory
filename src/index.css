@@ -127,6 +127,17 @@ input[type='checkbox'] {
   min-height: 0;
 }
 
+.map-container,
+.map-container * {
+  /* Without this, holding a press on Leaflet's zoom control (or any other
+     text inside the map) triggers the browser's native text-selection/
+     callout UI instead of our long-press-to-create gesture. */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
 .map-container {
   flex: 1;
   min-width: 0;
