@@ -4,8 +4,10 @@ import { getCategory } from '../../config/categories';
 import { makeDivIcon } from '../../lib/leafletIcon';
 import type { Place } from '../../types/place';
 import type { MapView as MapViewState } from '../../hooks/useMapView';
+import type { Poi } from '../../data/overpass';
 import { MapLongPressHandler } from './MapLongPressHandler';
 import { MapViewSync } from './MapViewSync';
+import { NearbyPoisLayer } from './NearbyPoisLayer';
 
 const DRAFT_ICON = makeDivIcon('#9e9e9e', '📍');
 
@@ -16,6 +18,8 @@ interface Props {
   draftLocation: { lat: number; lng: number } | null;
   onLongPress: (lat: number, lng: number) => void;
   onSelectPlace: (id: string) => void;
+  discoverEnabled: boolean;
+  onAddPoi: (poi: Poi) => void;
 }
 
 export function MapView({
@@ -25,6 +29,8 @@ export function MapView({
   draftLocation,
   onLongPress,
   onSelectPlace,
+  discoverEnabled,
+  onAddPoi,
 }: Props) {
   return (
     <MapContainer
@@ -50,6 +56,7 @@ export function MapView({
       </LayersControl>
       <MapLongPressHandler onLongPress={onLongPress} />
       <MapViewSync onChange={onViewChange} />
+      <NearbyPoisLayer enabled={discoverEnabled} onAddPoi={onAddPoi} />
       {places.map((place) => {
         const category = getCategory(place.category);
         if (!category) return null;

@@ -10,16 +10,28 @@ const LAST_CATEGORY_KEY = 'travel-memory:last-category';
 interface Props {
   location: { lat: number; lng: number };
   existing?: Place;
+  initialName?: string;
+  initialCategory?: CategoryKey;
   onSave: (place: Place) => void;
   onCancel: () => void;
 }
 
-export function PlaceForm({ location, existing, onSave, onCancel }: Props) {
+export function PlaceForm({
+  location,
+  existing,
+  initialName,
+  initialCategory,
+  onSave,
+  onCancel,
+}: Props) {
   const [categoryKey, setCategoryKey] = useState<CategoryKey>(
-    existing?.category ?? localStorage.getItem(LAST_CATEGORY_KEY) ?? CATEGORIES[0].key,
+    existing?.category ??
+      initialCategory ??
+      localStorage.getItem(LAST_CATEGORY_KEY) ??
+      CATEGORIES[0].key,
   );
   const [values, setValues] = useState<FormValues>({
-    name: existing?.name ?? '',
+    name: existing?.name ?? initialName ?? '',
     referenceUrl: existing?.referenceUrl ?? '',
     notes: existing?.notes ?? '',
     attributes: existing?.attributes ?? {},

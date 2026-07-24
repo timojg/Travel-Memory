@@ -7,11 +7,19 @@ import { ExportImportBar } from './components/io/ExportImportBar';
 import { usePlaces } from './hooks/usePlaces';
 import { useCategoryFilter } from './hooks/useCategoryFilter';
 import { useMapView } from './hooks/useMapView';
+import { useDiscoverPois } from './hooks/useDiscoverPois';
 import type { Place } from './types/place';
+import type { CategoryKey } from './types/category';
+import type { Poi } from './data/overpass';
 
 type PanelState =
   | { kind: 'idle' }
-  | { kind: 'creating'; location: { lat: number; lng: number } }
+  | {
+      kind: 'creating';
+      location: { lat: number; lng: number };
+      prefillName?: string;
+      prefillCategory?: CategoryKey;
+    }
   | { kind: 'editing'; place: Place }
   | { kind: 'viewing'; place: Place };
 
@@ -19,12 +27,22 @@ export default function App() {
   const { places, loading, addPlace, updatePlace, deletePlace, importPlaces } = usePlaces();
   const { isActive, toggle } = useCategoryFilter();
   const { view, saveView } = useMapView();
+  const { enabled: discoverEnabled, toggle: toggleDiscover } = useDiscoverPois();
   const [panel, setPanel] = useState<PanelState>({ kind: 'idle' });
 
   const visiblePlaces = places.filter((p) => isActive(p.category));
 
   function handleLongPress(lat: number, lng: number) {
     setPanel({ kind: 'creating', location: { lat, lng } });
+  }
+
+  function handleAddPoi(poi: Poi) {
+    setPanel({
+      kind: 'creating',
+      location: { lat: poi.lat, lng: poi.lng },
+      prefillName: poi.name,
+      prefillCategory: poi.suggestedCategory,
+    });
   }
 
   function handleSelectPlace(id: string) {
@@ -50,7 +68,13 @@ export default function App() {
     <div className="app">
       <header className="app-header">
         <h1>Travel-Memory</h1>
-        <ExportImportBar places={places} onImport={importPlaces} />
+        <div className="header-actions">
+          <label className="discover-toggle">
+            <input type="checkbox" checked={discoverEnabled} onChange={toggleDiscover} />
+            POIs aus OSM anzeigen
+          </label>
+          <ExportImportBar places={places} onImport={importPlaces} />
+        </div>
       </header>
 
       <CategoryFilterBar isActive={isActive} onToggle={toggle} />
@@ -63,12 +87,16 @@ export default function App() {
           draftLocation={panel.kind === 'creating' ? panel.location : null}
           onLongPress={handleLongPress}
           onSelectPlace={handleSelectPlace}
+          discoverEnabled={discoverEnabled}
+          onAddPoi={handleAddPoi}
         />
 
         {panel.kind === 'creating' && (
           <aside className="side-panel">
             <PlaceForm
               location={panel.location}
+              initialName={panel.prefillName}
+              initialCategory={panel.prefillCategory}
               onSave={handleSave}
               onCancel={() => setPanel({ kind: 'idle' })}
             />

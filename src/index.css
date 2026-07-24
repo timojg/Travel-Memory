@@ -97,6 +97,25 @@ input[type='checkbox'] {
   border-bottom: 1px solid var(--border);
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.discover-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.discover-toggle input {
+  width: auto;
+}
+
 .export-import-bar {
   display: flex;
   gap: 8px;
@@ -244,4 +263,44 @@ input[type='checkbox'] {
 .place-marker {
   background: transparent;
   border: none;
+}
+
+.poi-marker__dot {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border-width: 2px;
+  border-style: solid;
+  background: var(--bg);
+  opacity: 0.85;
+}
+
+.poi-marker {
+  background: transparent;
+  border: none;
+}
+
+.poi-popup {
+  font-size: 14px;
+}
+
+.poi-popup__type {
+  opacity: 0.7;
+  margin: 2px 0 8px;
+}
+
+.poi-hint {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 12px;
+  opacity: 0.85;
+  z-index: 1000;
+  pointer-events: none;
 }
